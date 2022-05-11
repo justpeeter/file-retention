@@ -4,9 +4,9 @@
 while test $# -gt 0; do
   case "$1" in
     -h|--help)
-        echo "$package - backup file retention with in 3 days"
+        echo "file-retention.sh - script cleanup file retention with in 3 days"
         echo " "
-        echo "$package [options] application [arguments]"
+        echo "file-retention.sh [options] application [arguments]"
         echo " "
         echo "options:"
         echo "-h, --help                        show brief help"
