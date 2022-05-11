@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/bash
 
 #### Flag
 while test $# -gt 0; do
@@ -49,23 +49,37 @@ while test $# -gt 0; do
 done
 
 ### main script
+
+in_date=$(date  --date="3 days ago" +"%Y%m%d")
+
 if [ -z "$db_path" ] || [ ! -d "$db_path" ]
 then
     echo "database backup file path is not specify or path $db_path does not exists." | sed "s/  / /"
 else
-    echo "database backup file path is $db_path"
+    echo "database backup file path is $db_path."
+    for list_file in "$db_path"/*
+    do
+        if [[ $list_file == *".DB.$in_date"* ]]; then
+            rm "$list_file"
+            echo "$list_file has deleted."
+        fi
+    done
+    echo "delete database backup file successfully."
 fi
 
 if [ -z "$logs_path" ] || [ ! -d "$logs_path" ]
 then
     echo "transaction logs backup file path is not specify or path $logs_path does not exists." | sed "s/  / /"
 else
-    echo "transaction logs backup file path is $logs_path"
-    cmd="find $logs_path -name '*.log' -type f -mtime +60" 
-    #cmd="ls"
-    echo $cmd
-    /bin/bash $cmd
-    echo "delete file successfully"
+    echo "transaction logs backup file path is $logs_path."
+    for list_file in "$logs_path"/*
+    do
+        if [[ $list_file == *".TRAN.$in_date"* ]]; then
+            rm "$list_file"
+            echo "$list_file has deleted."
+        fi
+    done
+    echo "delete transaction logs backup file successfully."
 fi
 
 if [ -z "$db_path" ] && [ -z "$logs_path" ]
