@@ -1,4 +1,4 @@
-# file-retention.sh - script cleanup file with in 3 days
+# file-retention.sh - script delete file older than 3 days
  
 ### ***file-retention.sh [options] application [arguments]***
  
