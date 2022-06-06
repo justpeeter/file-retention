@@ -4,7 +4,7 @@
 while test $# -gt 0; do
   case "$1" in
     -h|--help)
-        echo "file-retention.sh - script cleanup file retention"
+        echo "file-retention.sh - script cleanup backup file"
         echo " "
         echo "file-retention.sh [options] application [arguments]"
         echo " "
@@ -12,7 +12,7 @@ while test $# -gt 0; do
         echo "-h, --help                        show brief help"
         echo "-db, --db-backup-path=DIR         specify a directory to store database backup file path"
         echo "-logs, --logs-backup-path=DIR     specify a directory to store transaction logs backup file path"
-        echo "-hana, --hana-backup-path=DIR    specify a directory to store transaction hana backup file path"
+        echo "-hana, --hana-backup-path=DIR     specify a directory to store transaction hana backup file path"
         echo "--days=DIR                        specify day retention period expires.(default=3)"
         exit 0
         ;;
