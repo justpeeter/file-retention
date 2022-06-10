@@ -12,11 +12,11 @@ while test $# -gt 0; do
         echo "-h, --help                        show brief help"
         echo "-db, --db-backup-path=DIR         specify a directory to store database backup file path"
         echo "-logs, --logs-backup-path=DIR     specify a directory to store transaction logs backup file path"
-        echo "-hana, --hana-backup-path=DIR     specify a directory to store transaction hana backup file path"
+        echo "-hana, --hana-backup-path=DIR     specify a directory to store hana backup file path"
         echo "--days=DIR                        specify day retention period expires.(default=3)"
         exit 0
         ;;
-    -d|--db-backup-path)
+    -db|--db-backup-path)
         shift
         if test $# -gt 0; then
             export db_path=$1
@@ -85,23 +85,12 @@ then
     days="3"
 fi
 
-in_date=$(date -d "${days} days ago" +"%Y%m%d")
-db_regex=".*\.DB\.(([12][0-9]{3})(0[1-9]|1[0-2])(0[1-9]|[12][0-9]|3[01]))\..*"
-log_regex=".*\.TRAN\.(([12][0-9]{3})(0[1-9]|1[0-2])(0[1-9]|[12][0-9]|3[01]))\..*"
-hana_regex="(([12][0-9]{3})-(0[1-9]|1[0-2])-(0[1-9]|[12][0-9]|3[01]))_.*_databackup_.*"
-
 if [ -z "$db_path" ] || [ ! -d "$db_path" ]
 then
     echo "database backup file path is not specify or path $db_path does not exists." | sed "s/  / /"
 else
     echo "database backup file path is $db_path."
-    for list_file in "$db_path"/*
-    do
-        if [[ $list_file =~ $db_regex ]]; then
-            rm "$list_file"
-            echo "$list_file has deleted."
-        fi
-    done
+    find "$db_path" -maxdepth 3 -name "*.DB.*"  -type f -mmin +$(($days*24*60)) -print -delete
     echo "delete database backup file successfully."
 fi
 
@@ -110,13 +99,7 @@ then
     echo "transaction logs backup file path is not specify or path $logs_path does not exists." | sed "s/  / /"
 else
     echo "transaction logs backup file path is $logs_path."
-    for list_file in "$logs_path"/*
-    do
-        if [[ $list_file =~ $log_regex ]]; then
-            rm "$list_file"
-            echo "$list_file has deleted."
-        fi
-    done
+    find "$logs_path" -maxdepth 3 -name "*.TRAN.*"  -type f -mmin +$(($days*24*60)) -print -delete
     echo "delete transaction logs backup file successfully."
 fi
 
@@ -125,13 +108,7 @@ then
     echo "hana backup file path is not specify or path $hana_path does not exists." | sed "s/  / /"
 else
     echo "hana backup file path is $hana_path."
-    for list_file in "$hana_path"/*
-    do
-        if [[ $list_file =~ $hana_path ]]; then
-            rm "$list_file"
-            echo "$list_file has deleted."
-        fi
-    done
+    find "$hana_path" -maxdepth 3 -name "*_databackup_*"  -type f -mmin +$(($days*24*60)) -print -delete
     echo "delete hana backup file successfully."
 fi
 
