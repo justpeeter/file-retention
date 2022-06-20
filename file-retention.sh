@@ -163,7 +163,7 @@ else
     echo "delete hana logs file successfully." >> "$default_path/$in_date.retention.log"
 fi
 
-if [ -z "$db_path" ] && [ -z "$logs_path" ] && [ -z "$hana_path" ]
+if [ -z "$db_path" ] && [ -z "$logs_path" ] && [ -z "$hana_path" ] && [ -z "$hana_logs_path" ]
 then
     exit 1
 fi
