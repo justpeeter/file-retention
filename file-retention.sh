@@ -13,6 +13,7 @@ while test $# -gt 0; do
         echo "-db, --db-backup-path=DIR             specify a directory to store database backup file path"
         echo "-logs, --logs-backup-path=DIR         specify a directory to store transaction logs backup file path"
         echo "-hana, --hana-backup-path=DIR         specify a directory to store hana backup file path"
+        echo "-hana-logs, --hana-logs-path=DIR      specify a directory to store hana logs file path"
         echo "--days=DIR                            specify day retention period expires.(default=3)"
         echo "-display, --display-logs-path=DIR     specify a directory to store script log file path(default=/otp/DB_Retention)"
         exit 0
@@ -57,6 +58,20 @@ while test $# -gt 0; do
         ;;
     --hana-backup-path*)
         export hana_path=`echo $1 | sed -e 's/^[^=]*=//g'`
+        shift
+        ;;
+    -hana-logs|--hana-logs-path)
+        shift
+        if test $# -gt 0; then
+            export hana_logs_path=$1
+        else
+            echo "no transaction logs backup dir specified"
+            exit 1
+        fi
+        shift
+        ;;
+    --hana-logs-path*)
+        export hana_logs_path=`echo $1 | sed -e 's/^[^=]*=//g'`
         shift
         ;;
     --days)
@@ -137,6 +152,15 @@ else
     echo "hana backup file path is $hana_path." >> "$default_path/$in_date.retention.log"
     find "$hana_path" -maxdepth 3 -name "*_databackup_*"  -type f -mmin +$(($days*24*60)) -print -delete >> "$default_path/$in_date.retention.log"
     echo "delete hana backup file successfully." >> "$default_path/$in_date.retention.log"
+fi
+
+if [ -z "$hana_logs_path" ] || [ ! -d "$hana_logs_path" ]
+then
+    echo "hana logs file path is not specify or path $hana_logs_path does not exists." | sed "s/  / /" >> "$default_path/$in_date.retention.log"
+else
+    echo "hana logs file path is $hana_logs_path." >> "$default_path/$in_date.retention.log"
+    find "$hana_logs_path" -maxdepth 3 -name "log_backup_*"  -type f -mmin +$(($days*24*60)) -print -delete >> "$default_path/$in_date.retention.log"
+    echo "delete hana logs file successfully." >> "$default_path/$in_date.retention.log"
 fi
 
 if [ -z "$db_path" ] && [ -z "$logs_path" ] && [ -z "$hana_path" ]
